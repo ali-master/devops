@@ -1,0 +1,26 @@
+debug = true
+checkNewVersion = true
+logLevel = "ERROR"
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+  [entryPoints.dashboard]
+    address = ":8080"
+  [entryPoints.http]
+    address = ":80"
+
+[web]
+  address = ":8088"
+  [web.statistics]
+
+[api]
+entrypoint="dashboard"
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "domain.com"
+watch = true
+exposedbydefault = false
+network = "web"

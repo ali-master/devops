@@ -2,34 +2,23 @@ version: "3"
 
 services:
     traefik:
-        image: traefik:v2.0
-        container_name: traefik
-        restart: unless-stopped
-        security_opt:
-            - no-new-privileges:true
-        networks:
-            - web
+        image: traefik:1.7.20
+        restart: always
         ports:
             - 80:80
-            - 443:443
-        volumes:
-            - /etc/localtime:/etc/localtime:ro
-            - /var/run/docker.sock:/var/run/docker.sock:ro
-            - ./data/traefik.yml:/traefik.yml:ro
-            - ./data/acme.json:/acme.json
-            - ./data/config.yml:/config.yml:ro
+            - 8088:8088
+        networks:
+            - web
         labels:
+            - "traefik.port=80"
             - "traefik.enable=true"
-            - "traefik.http.routers.traefik.entrypoints=http"
-            - "traefik.http.routers.traefik.rule=Host(`traefik.domain.com`)"
-            - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
-            - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
-            - "traefik.http.routers.traefik-secure.entrypoints=https"
-            - "traefik.http.routers.traefik-secure.rule=Host(`traefik.domain.com`)"
-            - "traefik.http.routers.traefik-secure.tls=true"
-            - "traefik.http.routers.traefik-secure.tls.certresolver=http"
-            - "traefik.http.routers.traefik-secure.service=api@internal"
-            - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+            - traefik.docker.network=web
+            - traefik.default.protocol=http
+            - "traefik.frontend.rule=Host:monitor.domain.com"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./data/traefik.toml:/traefik.toml
+        container_name: traefik
 
 networks:
     web:
